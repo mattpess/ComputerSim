@@ -15,16 +15,39 @@ unsigned char memory_fetch(int address) {
 	return mem_get(decoder(lowerhalf), decoder(upperhalf));
 }
 unsigned int memory_fetch_word(int address) {
-	int fetchA = memory_fetch(address);
-	int fetchB = memory_fetch(address + 1);
-	int fetchC = memory_fetch(address + 2);
-	int fetchD = memory_fetch(address + 3);
+	unsigned int fetchA = memory_fetch(address);
+	unsigned int fetchB = memory_fetch(address + 1);
+	unsigned int fetchC = memory_fetch(address + 2);
+	unsigned int fetchD = memory_fetch(address + 3);
+	
 	//concatonate
+	fetchA = concat(fetchA, fetchB);
+	fetchC = concat(fetchC, fetchD);
+	return concat(fetchA, fetchC);
+	
 }
 void memory_dump(int start_address, int num_bytes) {
 	for(int i = 0; i < num_bytes; i++) {
-		
+		printf("%c ", memory_fetch(start_address + i));
 	}
 }
-void memory_store_word(int address, unsigned int value);
-void load_memory(char *filename);
+void memory_store_word(int address, unsigned int value) {
+	//Ask Gusty about splitting value into 4 parts
+}
+void load_memory(char *filename){
+	
+	FILE fp = fopen(filename, "r");
+	unsigned int i; 
+	fscanf(fp, "%d", i);
+	unsigned int tempData;
+	while(fscanf(fp, "%d", tempData) != EOF) {
+		memory_store_word(i, tempData);
+		i++;
+	}	
+}
+unsigned int concat(unsigned int x, unsigned int y){
+	unsigned int i = 10;
+	while(y >= i)
+		i *= 10;
+	return x * i + y;
+}

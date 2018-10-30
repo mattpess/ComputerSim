@@ -17,5 +17,12 @@ int main() {
 	
 	printf("Memory at 0,0: %c\n", memory_fetch(0000000000));
 	
+	memory_store_word(0000000000, 0x00000001);
+	
+	printf("Memory at 0,0: 0x%x\n", memory_fetch_word(0000000000));
+	
+	memory_dump(0, 20);
+	printf("\n");
+	
 	return 0;
 }

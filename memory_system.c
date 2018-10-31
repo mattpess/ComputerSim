@@ -3,7 +3,7 @@
 #include "decoder.h"
 #include <stdio.h>
 
-unsigned int concat(unsigned int x, unsigned int y);
+//unsigned int concat(unsigned int x, unsigned int y);
 void memory_store(int address, unsigned char value) {
 	int lowerhalf = address & 0x1f;
 	int upperhalf = (address >> 5) & 0x1f;
@@ -16,17 +16,20 @@ unsigned char memory_fetch(int address) {
 	return mem_get(decoder(lowerhalf), decoder(upperhalf));
 }
 unsigned int memory_fetch_word(int address) {
-	unsigned int fetchA = memory_fetch(address);
-	unsigned int fetchB = memory_fetch(address + 1);
-	unsigned int fetchC = memory_fetch(address + 2);
-	unsigned int fetchD = memory_fetch(address + 3);
+	unsigned char b1 = memory_fetch(address);
+	unsigned char b2 = memory_fetch(address + 1);
+	unsigned char b3 = memory_fetch(address + 2);
+	unsigned char b4 = memory_fetch(address + 3);
 	
-	printf("0x%x 0x%x 0x%x 0x%x\n", fetchA, fetchB, fetchC, fetchD);
+	printf("0x%x 0x%x 0x%x 0x%x\n", b1, b2, b3, b4);
 	
 	//concatonate
-	fetchA = concat(fetchA, fetchB);
-	fetchC = concat(fetchC, fetchD);
-	return concat(fetchA, fetchC);
+	/*
+	b1 = concat(b1, b2);
+	b3 = concat(b3, b4);
+	return concat(b1, b3);
+	*/
+	return b4<<24 | b3<<16 | b2<<8 | b1;
 	
 }
 void memory_dump(int start_address, int num_bytes) {
@@ -43,9 +46,9 @@ void memory_store_word(int address, unsigned int value) {
 	b4 = value >> 24 & 0xff;
 	printf("0x%x 0x%x 0x%x 0x%x\n", b1, b2 , b3, b4);
 	memory_store(address, b1);
-	memory_store(address+2, b2);
-	memory_store(address+4, b3);
-	memory_store(address+6, b4);
+	memory_store(address+1, b2); // address+1
+	memory_store(address+2, b3); // address+2
+	memory_store(address+3, b4); // address+3
 }
 void load_memory(char *filename){
 	
@@ -58,9 +61,9 @@ void load_memory(char *filename){
 		i++;
 	}	
 }
-unsigned int concat(unsigned int x, unsigned int y){
+/*unsigned int concat(unsigned int x, unsigned int y){
 	unsigned int i = 10;
 	while(y >= i)
 		i *= 10;
 	return (unsigned int)(x * i + y);
-}
+}*/

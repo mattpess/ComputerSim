@@ -7,13 +7,13 @@
 void memory_store(int address, unsigned char value) {
 	int lowerhalf = address & 0x1f;
 	int upperhalf = (address >> 5) & 0x1f;
-	mem_put(decoder(lowerhalf), decoder(upperhalf), value);
+	mem_put(decoder(upperhalf), decoder(lowerhalf), value);
 	printf("0x%x - memory stored at %d, %d\n", value, lowerhalf, upperhalf);
 }
 unsigned char memory_fetch(int address) {
 	int lowerhalf = address & 0x1f;
 	int upperhalf = (address >> 5) & 0x1f;
-	return mem_get(decoder(lowerhalf), decoder(upperhalf));
+	return mem_get(decoder(upperhalf), decoder(lowerhalf));
 }
 unsigned int memory_fetch_word(int address) {
 	unsigned char b1 = memory_fetch(address);
@@ -34,8 +34,9 @@ unsigned int memory_fetch_word(int address) {
 }
 void memory_dump(int start_address, int num_bytes) {
 	for(int i = 0; i < num_bytes; i++) {
-		printf("%c ", memory_fetch(start_address + i));
+		printf("0x%x ", memory_fetch(start_address + i));
 	}
+	printf("\n");
 }
 void memory_store_word(int address, unsigned int value) {
 	//Ask Gusty about splitting value into 4 parts
@@ -51,15 +52,17 @@ void memory_store_word(int address, unsigned int value) {
 	memory_store(address+3, b4); // address+3
 }
 void load_memory(char *filename){
-	
 	FILE *fp = fopen(filename, "r");
-	unsigned int i; 
-	fscanf(fp, "%d", i);
+	int i; 
+	fscanf(fp, "%d", &i);
 	unsigned int tempData;
-	while(fscanf(fp, "%d", tempData) != EOF) {
+	int count = 0;
+	while(fscanf(fp, "%x", &tempData) != EOF && count < 25) { //check infinite loop later
 		memory_store_word(i, tempData);
-		i++;
+		i = i+4;
+		count++;
 	}	
+	fclose(fp);
 }
 /*unsigned int concat(unsigned int x, unsigned int y){
 	unsigned int i = 10;

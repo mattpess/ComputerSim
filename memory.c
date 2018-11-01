@@ -14,8 +14,15 @@ void mem_put(unsigned int row_selected, unsigned int col_selected, unsigned char
 void mem_dump() {
 	for(int i = 0; i < 32; i++) {
 		for(int j = 0; j < 32; j++) {
-			printf("%c ", memoryChip[i][j]);
+			printf("0x%x ", memoryChip[i][j]);
 		}
 		printf("\n");
+	}
+}
+void memory_fill(unsigned char value) {
+	for(int i = 0; i < 32; i++) {
+		for(int j = 0; j < 32; j++) {
+			memoryChip[i][j] = value;
+		}
 	}
 }

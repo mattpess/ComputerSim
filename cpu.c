@@ -42,6 +42,15 @@ void step() {
         pc += 4;
         break;
     case LDI:
+		reg = inst >> 16 & 0xff;
+		immediate = inst & 0xffff;
+		if (reg > 15) {
+			printf("Register out of bounds.\n");
+			exit(1);
+			}
+		registers[reg] = immediate;
+		printf("reg: %d, reg val: 0x%x08x, immediate: 0x%04x\n", reg, registers[reg], address);
+		pc += 4;
 		break;
 	case LDX:
 		break;

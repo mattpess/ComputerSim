@@ -8,7 +8,7 @@
 
 int registers[16];
 int cpsr = 0;
-int reg, immediate;
+int reg, immediate, reg2;
 unsigned int address;
 
 void set_reg(int reg, int value) {
@@ -68,19 +68,81 @@ void step() {
 	case DIV:
 		break;
 	case CMP:
+		reg = inst >> 8 & 0xff;
+		reg2 = inst & 0xff;
+		if (reg > 15 || reg2 > 15) {
+			printf("Register out of bounds.\n");
+			exit(1);
+			}
+		if (reg == reg2) {
+			bit_set(&cpsr, Z);
+			bit_clear(&cpsr, LT);
+			bit_clear(&cpsr, GT);
+		}
+		else if (reg < reg2) { 
+			bit_clear(&cpsr, Z);
+			bit_set(&cpsr, LT);
+			bit_clear(&cpsr, GT);
+		}
+		else { 
+			bit_clear(&cpsr, Z);
+			bit_clear(&cpsr, LT);
+			bit_set(&cpsr, GT);
+		}
 		break;
 	case B:
+		address = inst & 0xffffff;
+		if (address > 1023) {
+            printf("Address out of bounds.\n");
+            exit(1);
+        }
+		registers[PC] = address;
 		break;
 	case BEQ:
+		if (bit_test(cpsr, Z) == 1) {
+			address = inst & 0xffffff;
+			if (address > 1023) {
+				printf("Address out of bounds.\n");
+				exit(1);
+			}
+			registers[PC] = address;
+		}
 		break;
 	case BNE:
+		if (bit_test(cpsr, Z) == 0) {
+			address = inst & 0xffffff;
+			if (address > 1023) {
+				printf("Address out of bounds.\n");
+				exit(1);
+			}
+			registers[PC] = address;
+		}
 		break;
 	case BLT:
+		if (bit_test(cpsr, LT) == 1) {
+			address = inst & 0xffffff;
+			if (address > 1023) {
+				printf("Address out of bounds.\n");
+				exit(1);
+			}
+			registers[PC] = address;
+		}
 		break;
 	case BGT:
+		if (bit_test(cpsr, GT) == 0) {
+			address = inst & 0xffffff;
+			if (address > 1023) {
+				printf("Address out of bounds.\n");
+				exit(1);
+			}
+			registers[PC] = address;
+		}
 		break;
 	}
 }
 void step_n(int n) {
-	
+	while (n > 0) {
+		step();
+		n--;
+	}
 }

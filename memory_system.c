@@ -8,7 +8,7 @@ void memory_store(int address, unsigned char value) {
 	int lowerhalf = address & 0x1f;
 	int upperhalf = (address >> 5) & 0x1f;
 	mem_put(decoder(upperhalf), decoder(lowerhalf), value);
-	printf("0x%x - memory stored at %d, %d\n", value, lowerhalf, upperhalf);
+	//printf("0x%x - memory stored at %d, %d\n", value, lowerhalf, upperhalf);
 }
 unsigned char memory_fetch(int address) {
 	int lowerhalf = address & 0x1f;
@@ -21,7 +21,7 @@ unsigned int memory_fetch_word(int address) {
 	unsigned char b3 = memory_fetch(address + 2);
 	unsigned char b4 = memory_fetch(address + 3);
 	
-	printf("0x%x 0x%x 0x%x 0x%x\n", b1, b2, b3, b4);
+	//printf("0x%x 0x%x 0x%x 0x%x\n", b1, b2, b3, b4);
 	
 	//concatonate
 	/*
@@ -45,7 +45,7 @@ void memory_store_word(int address, unsigned int value) {
 	b2 = value >> 8 & 0xff;
 	b3 = value >> 16 & 0xff;
 	b4 = value >> 24 & 0xff;
-	printf("0x%x 0x%x 0x%x 0x%x\n", b1, b2 , b3, b4);
+	//printf("0x%x 0x%x 0x%x 0x%x\n", b1, b2 , b3, b4);
 	memory_store(address, b1);
 	memory_store(address+1, b2); // address+1
 	memory_store(address+2, b3); // address+2

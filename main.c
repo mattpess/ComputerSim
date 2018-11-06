@@ -90,6 +90,7 @@ int main(int argc, char **argv) {
 			printf("Enter file name: ");
 			scanf("%s", file_name);
 			load_memory(file_name);
+			mem_dump();
 		}
 		else {
 			printf("invalid cmd\n");

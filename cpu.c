@@ -8,7 +8,7 @@
 
 int registers[16];
 int cpsr = 0;
-int reg, immediate, reg2;
+int reg, immediate, reg2, dest_reg;
 unsigned int address;
 
 void set_reg(int reg, int value) {
@@ -60,12 +60,52 @@ void step() {
 	case STR:
 		break;
 	case ADD:
+		dest_reg = inst >> 16 & 0xff;
+        reg = inst >> 8 & 0xff;
+        reg2 = inst & 0xff;
+        if (dest_reg > 15 || reg > 15 || reg2 > 15) {
+            printf("One or more registers out of bounds.\n");
+            exit(1);
+        }
+        registers[dest_reg] = registers[reg] + registers[reg2] 
+        printf("dest_reg: %d, reg1 value: 0x%x08x, reg2 value: 0x%x08x\n", reg, registers[reg], registers[reg2]);
+        registers[PC] += 4;
 		break;
 	case SUB:
+		dest_reg = inst >> 16 & 0xff;
+        reg = inst >> 8 & 0xff;
+        reg2 = inst & 0xff;
+        if (dest_reg > 15 || reg > 15 || reg2 > 15) {
+            printf("One or more registers out of bounds.\n");
+            exit(1);
+        }
+        registers[dest_reg] = registers[reg] - registers[reg2] 
+        printf("dest_reg: %d, reg1 value: 0x%x08x, reg2 value: 0x%x08x\n", reg, registers[reg], registers[reg2]);
+        registers[PC] += 4;
 		break;
 	case MUL:
+		dest_reg = inst >> 16 & 0xff;
+        reg = inst >> 8 & 0xff;
+        reg2 = inst & 0xff;
+        if (dest_reg > 15 || reg > 15 || reg2 > 15) {
+            printf("One or more registers out of bounds.\n");
+            exit(1);
+        }
+        registers[dest_reg] = registers[reg] * registers[reg2] 
+        printf("dest_reg: %d, reg1 value: 0x%x08x, reg2 value: 0x%x08x\n", reg, registers[reg], registers[reg2]);
+        registers[PC] += 4;
 		break;
 	case DIV:
+		dest_reg = inst >> 16 & 0xff;
+        reg = inst >> 8 & 0xff;
+        reg2 = inst & 0xff;
+        if (dest_reg > 15 || reg > 15 || reg2 > 15) {
+            printf("One or more registers out of bounds.\n");
+            exit(1);
+        }
+        registers[dest_reg] = registers[reg] / registers[reg2] 
+        printf("dest_reg: %d, reg1 value: 0x%x08x, reg2 value: 0x%x08x\n", reg, registers[reg], registers[reg2]);
+        registers[PC] += 4;
 		break;
 	case CMP:
 		reg = inst >> 8 & 0xff;
@@ -89,6 +129,7 @@ void step() {
 			bit_clear(&cpsr, LT);
 			bit_set(&cpsr, GT);
 		}
+		registers[PC] += 4;
 		break;
 	case B:
 		address = inst & 0xffffff;

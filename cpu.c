@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "bit_functions.h"
 #include "decoder.h"
+#include "memory_system.h"
 #include "cpu.h"
 
 int registers[16];
 int cpsr = 0;
-
+int reg, immediate;
+unsigned int address;
 
 void set_reg(int reg, int value) {
 	registers[reg] = value;
@@ -39,7 +42,7 @@ void step() {
         }
         registers[reg] = memory_fetch_word(address);
         printf("reg: %d, reg val: 0x%x08x, address: 0x%04x\n", reg, registers[reg], address);
-        pc += 4;
+        registers[PC] += 4;
         break;
     case LDI:
 		reg = inst >> 16 & 0xff;
@@ -50,7 +53,7 @@ void step() {
 			}
 		registers[reg] = immediate;
 		printf("reg: %d, reg val: 0x%x08x, immediate: 0x%04x\n", reg, registers[reg], address);
-		pc += 4;
+		registers[PC] += 4;
 		break;
 	case LDX:
 		break;

@@ -235,7 +235,30 @@ void step() {
 			registers[PC] += 4;
 		}
 		break;
+	case MOV:
+		printf("Move\n");
+		reg = inst >> 8 & 0xff;
+		reg2 = inst & 0xff;
+		if (reg > 15 || reg2 > 15) {
+			printf("Register out of bounds.\n");
+			exit(1);
+			}
+		printf("dest_reg: %d, reg1 value: 0x%x08x, reg2 value: 0x%x08x\n", reg, registers[reg], registers[reg2]);
+		registers[reg] = registers[reg2];
+		break;
+	case BL:
+		printf("Branch Link");
+		address = inst & 0xffffff;
+		if (address > 1023) {
+            printf("Address out of bounds.\n");
+            exit(1);
+        }
+        printf(" to 0x%x\n", address);
+        registers[LR] = registers[PC];
+		registers[PC] = address;
+		break;
 	}
+
 }
 void step_n(int n) {
 	while (n > 0) {

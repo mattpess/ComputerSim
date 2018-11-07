@@ -7,7 +7,7 @@
 #include "cpu.h"
 
 int registers[16];
-int cpsr = 0;
+int cpsr = 0b000;
 int reg, immediate, reg2, dest_reg;
 unsigned int address;
 
@@ -35,7 +35,7 @@ void step() {
 	//execute
 	switch (opcode) {
     case LDR:
-		printf("LDR :: ");
+		printf("LDR: ");
         reg = inst >> 16 & 0xff;
         address = inst & 0xffff;
         if (address > 1023 || reg > 15) {
@@ -47,7 +47,7 @@ void step() {
         registers[PC] += 4;
         break;
     case LDI:
-		printf("LDI :: ");
+		printf("LDI: ");
 		reg = inst >> 16 & 0xff;
 		immediate = inst & 0xffff;
 		if (reg > 15) {
@@ -86,7 +86,7 @@ void step() {
         memory_store_word(address, registers[reg]);
 		break;
 	case ADD:
-		printf("ADD :: ");
+		printf("ADD: ");
 		dest_reg = inst >> 16 & 0xff;
         reg = inst >> 8 & 0xff;
         reg2 = inst & 0xff;
@@ -99,7 +99,7 @@ void step() {
         registers[PC] += 4;
 		break;
 	case SUB:
-		printf("SUB :: ");
+		printf("SUB: ");
 		dest_reg = inst >> 16 & 0xff;
         reg = inst >> 8 & 0xff;
         reg2 = inst & 0xff;
@@ -112,7 +112,7 @@ void step() {
         registers[PC] += 4;
 		break;
 	case MUL:
-		printf("MUL :: ");
+		printf("MUL:");
 		dest_reg = inst >> 16 & 0xff;
         reg = inst >> 8 & 0xff;
         reg2 = inst & 0xff;
@@ -125,7 +125,7 @@ void step() {
         registers[PC] += 4;
 		break;
 	case DIV:
-		printf("DIV :: ");
+		printf("DIV: ");
 		dest_reg = inst >> 16 & 0xff;
         reg = inst >> 8 & 0xff;
         reg2 = inst & 0xff;
@@ -138,7 +138,7 @@ void step() {
         registers[PC] += 4;
 		break;
 	case CMP:
-		printf("Compare");
+		printf("CMP: ");
 		reg = inst >> 8 & 0xff;
 		reg2 = inst & 0xff;
 		if (reg > 15 || reg2 > 15) {
@@ -149,24 +149,27 @@ void step() {
 			bit_set(&cpsr, Z);
 			bit_clear(&cpsr, LT);
 			bit_clear(&cpsr, GT);
-			printf(" equals :: 0x%x\n", cpsr);
+			printf("0x%x equals 0x%x, CPSR = 0x%x\n", registers[reg], registers[reg2], cpsr);
 		}
 		else if (registers[reg] < registers[reg2]) { 
 			bit_clear(&cpsr, Z);
 			bit_set(&cpsr, LT);
 			bit_clear(&cpsr, GT);
-			printf(" equals :: 0x%x\n", cpsr);
+			printf("0x%x lessthan 0x%x, CPSR = 0x%x\n", registers[reg], registers[reg2], cpsr);
 		}
 		else { 
 			bit_clear(&cpsr, Z);
+			//printf("CPSR clear Z = 0x%x\n", cpsr);
 			bit_clear(&cpsr, LT);
+			//printf("CPSR clear LT = 0x%x\n", cpsr);
 			bit_set(&cpsr, GT);
-			printf(" equals :: 0x%x\n", cpsr);
+			//printf("CPSR set GT = 0x%x\n", cpsr);
+			printf("0x%x greaterthan 0x%x, CPSR = 0x%x\n", registers[reg], registers[reg2], cpsr);
 		}
 		registers[PC] += 4;
 		break;
 	case B:
-		printf("Branch");
+		printf("B: ");
 		address = inst & 0xffffff;
 		if (address > 1023) {
             printf("Address out of bounds.\n");
@@ -176,8 +179,8 @@ void step() {
 		registers[PC] = address;
 		break;
 	case BEQ:
-		printf("Branch");
-		if (bit_test(cpsr, Z) == 1) {
+		printf("BEQ: ");
+		if (bit_test(cpsr, Z) == 0b001) {
 			address = inst & 0xffffff;
 			if (address > 1023) {
 				printf("Address out of bounds.\n");
@@ -191,8 +194,8 @@ void step() {
 		}
 		break;
 	case BNE:
-		printf("Branch");
-		if (bit_test(cpsr, Z) == 0) {
+		printf("BNE: ");
+		if (bit_test(cpsr, Z) == 0b000) {
 			address = inst & 0xffffff;
 			if (address > 1023) {
 				printf("Address out of bounds.\n");
@@ -206,8 +209,8 @@ void step() {
 		}
 		break;
 	case BLT:
-		printf("Branch");
-		if (bit_test(cpsr, LT) == 1) {
+		printf("BLT: ");
+		if (bit_test(cpsr, LT) == 0b010) {
 			address = inst & 0xffffff;
 			if (address > 1023) {
 				printf("Address out of bounds.\n");
@@ -221,8 +224,8 @@ void step() {
 		}
 		break;
 	case BGT:
-		printf("Branch");
-		if (bit_test(cpsr, GT) == 0) {
+		printf("BGT: ");
+		if (bit_test(cpsr, GT) == 0b100) {
 			address = inst & 0xffffff;
 			if (address > 1023) {
 				printf("Address out of bounds.\n");
@@ -236,7 +239,7 @@ void step() {
 		}
 		break;
 	case MOV:
-		printf("Move\n");
+		printf("MOV: ");
 		reg = inst >> 8 & 0xff;
 		reg2 = inst & 0xff;
 		if (reg > 15 || reg2 > 15) {
@@ -247,7 +250,7 @@ void step() {
 		registers[reg] = registers[reg2];
 		break;
 	case BL:
-		printf("Branch Link");
+		printf("BL: ");
 		address = inst & 0xffffff;
 		if (address > 1023) {
             printf("Address out of bounds.\n");
@@ -258,7 +261,6 @@ void step() {
 		registers[PC] = address;
 		break;
 	}
-
 }
 void step_n(int n) {
 	while (n > 0) {

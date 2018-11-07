@@ -15,9 +15,9 @@
 #define MOV 15
 #define BL 16
 
-#define Z 1
-#define LT 2
-#define GT 3
+#define Z 0
+#define LT 1
+#define GT 2
 
 #define SR 13
 #define LR 14
